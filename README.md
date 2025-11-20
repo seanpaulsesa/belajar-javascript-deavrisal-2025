@@ -1,2 +1,2 @@
-# belajar-javascript-deavrisal-2025
-JAVASCRIPT BOOTSTRAP MYSQL Database Untuk Pemula
+# aplikasi-javascript-2025
+pembauatan aplikasi javascript mysql database
