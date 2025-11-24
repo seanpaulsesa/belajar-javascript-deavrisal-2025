@@ -1,33 +1,49 @@
 const express = require('express');
 const mysql = require('mysql');
-
+const BodyParser = require("body-parser");
 const app = express();
 
-app.set("view engine", "ejs")
-app.set("views", "views")
+app.use(BodyParser.urlencoded({ extended: true }));
+
+app.set("view engine", "ejs");
+app.set("views", "views");
 
 const db = mysql.createConnection({
     host: "localhost",
     database: "school",
     user: "root",
     password: "",
-})
+});
 
+// KONEKSI DATABASE
 db.connect((err) => {
-    if (err) throw err
-    console.log("database connected...")
+    if (err) throw err;
+    console.log("database connected...");
+});
 
-    const sql = "SELECT * FROM user"
+// ROUTE HALAMAN UTAMA
+app.get("/", (req, res) => {
+    const sql = "SELECT * FROM user";
     db.query(sql, (err, result) => {
-        console.log("hasil database -> ", result)
-        const user = JSON.parse(JSON.stringify(result))
-        console.log("hasil database -> ", user)
-        app.get("/", (req, res) => {
-            res.render("index", {users: user, title: "WELCOME PAUL TO OUR PAGE"})
-        }) 
-    })    
-})
+        if (err) return res.send(err);
 
-app.listen(8000, () =>{
-    console.log("server ready...")
-})
+        const users = JSON.parse(JSON.stringify(result));
+        res.render("index", { users: users, title: "DAFTAR NAMA TIM PANCING" });
+    });
+});
+
+// ROUTE TAMBAH DATA
+app.post("/tambah", (req, res) => {
+    const insertSql = `INSERT INTO user (nama, kelas) VALUES (?, ?)`;
+    const values = [req.body.nama, req.body.kelas];
+
+    db.query(insertSql, values, (err, result) => {
+        if (err) return res.send(err);
+        res.redirect("/");
+    });
+});
+
+// MENJALANKAN SERVER
+app.listen(8000, () => {
+    console.log("server ready...");
+});
